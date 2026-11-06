@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>雷明的海洋時鐘</title>
+  <style>
+    body{
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      background-image: url('./img/background.gif');
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: center bottom;
+      position: relative;
+    }
+    #leming-running{
+      background-image: url('./img/leming-running.gif');
+      background-repeat: no-repeat;
+      background-size: contain;
+      width: calc(160px / 3);
+      height: calc(160px / 3);
+      position: absolute;
+      transform-origin: right;
+      top: calc(-160px / 6);
+      left: calc(-160px / 6 - 10%);
+    }
+    #leming-jumping{
+      background-image: url('./img/leming-jumping.gif');
+      background-repeat: no-repeat;
+      background-size: contain;
+      width: 130px;
+      height: 130px;
+      position: absolute;
+      left: 25%;
+      bottom: 8%;
+    }
+    #leming-onward{
+      background-image: url('./img/leming-onward.gif');
+      background-repeat: no-repeat;
+      background-size: contain;
+      width: 130px;
+      height: 130px;
+      position: absolute;
+      left: -130px;
+      bottom: 8%;
+      transition: all 10s;
+    }
+    #leming-stretching{
+      background-image: url('./img/leming-stretching.gif');
+      background-repeat: no-repeat;
+      background-size: contain;
+      width: 160px;
+      height: 240px;
+      position: absolute;
+      right: 25%;
+      bottom: 8%;
+    }
+    #clock{
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      background-color: #999;
+      margin: 0 auto;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+    #hour{
+      width: 20%;
+      height: 8px;
+      background-color: blueviolet;
+      position: absolute;
+      left: 30%;
+      top: calc(50% - 4px);
+      transform: rotate(0deg);
+      transform-origin: right center; 
+      border-radius: 4px;
+    }
+    #minute{
+      width: 40%;
+      height: 6px;
+      background-color: aqua;
+      position: absolute;
+      left: 10%;
+      top: calc(50% - 3px);
+      transform: rotate(0deg);
+      transform-origin: right center;      
+      border-radius: 4px;
+    }
+    #second{
+      width: 45%;
+      height: 4px;
+      background-color: plum;
+      position: absolute;
+      left: 5%;
+      top: calc(50% - 2px);
+      transform: rotate(0deg);
+      transform-origin: right center;      
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div id="clock">
+    <div id="second">
+      <div id="leming-running"></div>
+    </div>
+    <div id="minute"></div>
+    <div id="hour"></div>
+  </div>
+  <div id="leming-jumping"></div>
+  <div id="leming-stretching"></div>
+  <div id="leming-onward"></div>
+
+  <script>
+    const hour = document.getElementById('hour');
+    const minute = document.getElementById('minute');
+    const second = document.getElementById('second');
+    const leming_onward = document.getElementById('leming-onward');
+    
+    const clock = () => {
+      const date = new Date();
+      const h = date.getHours();
+      const m = date.getMinutes();
+      const s = date.getSeconds();
+      
+      hour.style.transform = `rotate(${h*(360/12) + 90}deg)`;
+      minute.style.transform = `rotate(${m*(360/60) + 90}deg)`;
+      second.style.transform = `rotate(${s*(360/60) + 90}deg)`;
+
+      // 每到中午 12 點金技勵要出來打招呼
+      if(h === 12){
+        leming_onward.style.right = '10%';
+        // 半小時後離場
+        if(m === 30){
+          leming_onward.style.right = '-130px';
+        }
+      }
+      // 每到凌晨 12 點雷明要出來打招呼
+      if(s === 0){
+        leming_onward.style.left = '10%';
+        // 半小時後離場
+        if(m === 30){
+          leming_onward.style.left = '-130px';
+        }
+      }
+    }
+
+    setInterval(clock, 1000);
+    clock();
+  </script>
+</body>
+</html>
