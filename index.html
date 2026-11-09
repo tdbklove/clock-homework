@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>雷明的海洋時鐘</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      background-image: url('./img/background.gif');
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: center bottom;
+      font-family: 'Pixelify Sans', Arial, Helvetica, sans-serif;
+    }
+
+    img {
+      user-select: none;
+      -webkit-user-drag: none;
+      cursor: pointer;
+    }
+
+    #container {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    #leming-run {
+      background-image: url('./img/leming-run.gif');
+      background-repeat: no-repeat;
+      background-size: contain;
+      width: calc(160px / 3);
+      height: calc(160px / 3);
+      position: absolute;
+      transform-origin: right;
+      top: calc(-160px / 6);
+      left: calc(-160px / 6 - 10%);
+    }
+
+    .leming-jump {
+      position: absolute;
+    }
+
+    .leming-stretch {
+      width: 160px;
+      position: absolute;
+      right: 20%;
+      bottom: 8%;
+    }
+
+    #leming-onward {
+      width: 130px;
+      position: absolute;
+      left: -130px;
+      bottom: 7%;
+      transition: left 8s linear;
+    }
+
+    #leming-float {
+      width: calc(1030px / 4);
+      position: absolute;
+      right: -258px;
+      top: 8%;
+      transition: right 8s linear;
+    }
+
+    #leming-fast-movement {
+      background-image: url('./img/leming-fast-movement.gif');
+      background-repeat: no-repeat;
+      background-size: contain;
+      width: 130px;
+      height: 130px;
+      position: absolute;
+      right: 25%;
+      bottom: 8%;
+    }
+
+    #clock {
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      background-color: #999;
+      margin: 0 auto;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      align-content: center;
+    }
+
+    #hour {
+      width: 20%;
+      height: 8px;
+      background-color: blueviolet;
+      position: absolute;
+      left: 30%;
+      top: calc(50% - 4px);
+      transform: rotate(0deg);
+      transform-origin: right center;
+      border-radius: 4px;
+    }
+
+    #minute {
+      width: 40%;
+      height: 6px;
+      background-color: aqua;
+      position: absolute;
+      left: 10%;
+      top: calc(50% - 3px);
+      transform: rotate(0deg);
+      transform-origin: right center;
+      border-radius: 4px;
+    }
+
+    #second {
+      width: 45%;
+      height: 4px;
+      background-color: plum;
+      position: absolute;
+      left: 5%;
+      top: calc(50% - 2px);
+      transform: rotate(0deg);
+      transform-origin: right center;
+      border-radius: 4px;
+    }
+
+    #num {
+      width: 95%;
+      height: 95%;
+      border-radius: 50%;
+      margin: 0 auto;
+      position: relative;
+
+      div {
+        font-size: 2rem;
+        position: absolute;
+      }
+    }
+
+    #t3 {
+      right: 0;
+      top: 50%;
+      transform: translate(0, -50%);
+    }
+
+    #t6 {
+      left: 50%;
+      bottom: 0;
+      transform: translate(-50%, 0);
+    }
+
+    #t9 {
+      left: 0;
+      top: 50%;
+      transform: translate(0, -50%);
+    }
+
+    #t12 {
+      left: 50%;
+      top: 0;
+      transform: translate(-50%, 0);
+    }
+  </style>
+</head>
+
+<body>
+  <div id="container">
+    <div id="clock">
+      <div id="second">
+        <div id="leming-run"></div>
+      </div>
+      <div id="minute"></div>
+      <div id="hour"></div>
+      <div id="num">
+        <div id="t3">3</div>
+        <div id="t6">6</div>
+        <div id="t9">9</div>
+        <div id="t12">12</div>
+      </div>
+    </div>
+
+    <!-- <img id="leming-stretch" src="./img/leming-stretch-wait.gif" alt="leming-stretch" onclick="gif(this)"> -->
+
+    <img id="leming-onward" src="./img/leming-onward.gif" alt="leming-onward">
+    <img id="leming-float" src="./img/leming-float.gif" alt="leming-float">
+
+    <!-- <div id="leming-fast-movement"></div> -->
+  </div>
+
+  <script>
+    const hour = document.getElementById('hour');
+    const minute = document.getElementById('minute');
+    const second = document.getElementById('second');
+    const container = document.getElementById('container');
+    const leming_onward = document.getElementById('leming-onward');
+    const leming_float = document.getElementById('leming-float');
+
+    // 點擊雷明觸發動畫
+    function gif(el) {
+      const _this = el;
+      let src = _this.getAttribute('src');
+
+      if (src.includes("-wait")) {
+        _this.style.pointerEvents = 'none';
+
+        let gif_src = src.replace('-wait', '');
+        _this.setAttribute('src', gif_src);
+
+        let timer = setTimeout(() => {
+          _this.setAttribute('src', src);
+          _this.style.pointerEvents = 'auto';
+          clearTimeout(timer);
+        }, 8000);
+      }
+    }
+
+    // 隨機數字
+    function random(min, max) {
+      const num = Math.round(Math.random() * (max - min)) + min;
+      return num;
+    }
+
+    // 隨機放置 5 個雷明
+    let stretch = random(2, 5);
+    for (let i = 1; i <= 5; i++) {
+      let img = document.createElement('img');
+
+      if (i !== stretch) {
+        img.src = './img/leming-jump-wait.gif';
+        img.classList.add('leming-jump');
+        img.style.width = random(110, 130) + 'px';
+      } else {
+        img.src = './img/leming-stretch-wait.gif';
+        img.classList.add('leming-stretch');
+      }
+
+      img.style.left = (17 * i) + '%';
+      img.style.bottom = random(1, 15) + '%';
+
+      img.onclick = function () {
+        gif(this);
+      };
+      container.append(img);
+    }
+
+    const clock = () => {
+      const date = new Date();
+      const h = date.getHours();
+      const m = date.getMinutes();
+      const s = date.getSeconds();
+
+      hour.style.transform = `rotate(${h * (360 / 12) + 90}deg)`;
+      minute.style.transform = `rotate(${m * (360 / 60) + 90}deg)`;
+      second.style.transform = `rotate(${s * (360 / 60) + 90}deg)`;
+
+      // 每個小時雷明要出來打招呼
+      if (m === 0) {
+        leming_onward.style.left = '5%';
+        leming_onward.style.transform = 'rotateY(0deg)';
+        const thmer = setTimeout(() => {
+          leming_onward.setAttribute('src', './img/leming-onward-wait.gif');
+          clearTimeout(thmer);
+        }, 8000);
+      }
+      // 每到中午 12 點金技勵要出來打招呼
+      if (h === 12) {
+        leming_float.style.right = '2%';
+      }
+      // 半小時後離場
+      if (m === 30) {
+        leming_float.style.right = '-258px';
+        leming_onward.style.left = '-130px';
+        leming_onward.style.transform = 'rotateY(180deg)';
+        leming_onward.setAttribute('src', './img/leming-onward.gif');
+      }
+    }
+
+    setInterval(clock, 1000);
+    clock();
+  </script>
+</body>
+
+</html>
