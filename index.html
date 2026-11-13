@@ -7,7 +7,7 @@
   <title>雷明的海洋時鐘</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Jersey+10&family=Press+Start+2P&family=Tiny5:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
   <style>
     body {
       width: 100vw;
@@ -20,7 +20,7 @@
       background-repeat: no-repeat;
       background-size: cover;
       background-position: center bottom;
-      font-family: 'Pixelify Sans', Arial, Helvetica, sans-serif;
+      font-family: 'Tiny5', 'DotGothic16', 'Press Start 2P', 'Jersey 10', 'Tiny5', Arial, sans-serif;
     }
 
     img {
@@ -45,6 +45,7 @@
       transform-origin: right;
       top: calc(-160px / 6);
       left: calc(-160px / 6 - 10%);
+      cursor: pointer;
     }
 
     .leming-jump {
@@ -58,12 +59,13 @@
       bottom: 8%;
     }
 
-    #leming-onward {
+    #leming-fast-movement {
       width: 130px;
       position: absolute;
       left: -130px;
-      bottom: 7%;
-      transition: left 8s linear;
+      bottom: 0%;
+      transition: left 60s linear;
+      z-index: 6;
     }
 
     #leming-float {
@@ -74,26 +76,15 @@
       transition: right 8s linear;
     }
 
-    #leming-fast-movement {
-      background-image: url('./img/leming-fast-movement.gif');
-      background-repeat: no-repeat;
-      background-size: contain;
-      width: 130px;
-      height: 130px;
-      position: absolute;
-      right: 25%;
-      bottom: 8%;
-    }
-
     #clock {
-      width: 300px;
-      height: 300px;
+      width: 400px;
+      height: 400px;
       border-radius: 50%;
       background-color: #999;
       margin: 0 auto;
       position: absolute;
       left: 50%;
-      top: 50%;
+      top: 35%;
       transform: translate(-50%, -50%);
       align-content: center;
     }
@@ -134,41 +125,72 @@
       border-radius: 4px;
     }
 
-    #num {
-      width: 95%;
-      height: 95%;
-      border-radius: 50%;
-      margin: 0 auto;
+    #time {
+      display: block;
+      width: 800px;
+      height: 4rem;
+      line-height: 4rem;
+      text-align: center;
+      font-size: 4rem;
+      position: absolute;
+      left: 50%;
+      bottom: -5.5rem;
+      transform: translateX(-50%);
+      color: #FFF;
+    }
+
+    #dialog{
+      width: 200px;
+      border: 3px solid #000;
+      background-color: #FFF;
+      padding: 1rem;
       position: relative;
-
-      div {
-        font-size: 2rem;
-        position: absolute;
-      }
+      border-radius: 0.25rem;
+      box-sizing: border-box;
+      z-index: 6;
     }
-
-    #t3 {
-      right: 0;
-      top: 50%;
-      transform: translate(0, -50%);
+    #dialog.left{
+      box-shadow: -10px -10px 0px -4px #e3e3e3 inset;
     }
-
-    #t6 {
-      left: 50%;
-      bottom: 0;
-      transform: translate(-50%, 0);
+    #dialog.right{
+      box-shadow: 10px -10px 0px -4px #e3e3e3 inset;
     }
-
-    #t9 {
-      left: 0;
-      top: 50%;
-      transform: translate(0, -50%);
+    #dialog::before{
+      content: '';
+      border-top: 13px solid transparent;
+      border-bottom: 13px solid transparent;
+      position: absolute;
+      bottom: 10px;
     }
-
-    #t12 {
-      left: 50%;
-      top: 0;
-      transform: translate(-50%, 0);
+    #dialog::after{
+      content: '';
+      border-top: 10px solid transparent;
+      border-bottom: 10px solid transparent;
+      position: absolute;
+      bottom: 13px;
+    }
+    #dialog.left::before{
+      border-left: 20px solid #000;
+      right: -20px;
+    }
+    #dialog.right::before{
+      border-right: 20px solid #000;
+      left: -20px;
+    }
+    #dialog.left::after{
+      border-left: 15px solid #e3e3e3;
+      right: -15px;
+    }
+    #dialog.right::after{
+      border-right: 15px solid #e3e3e3;
+      left: -15px;
+    }
+    
+    .hide{
+      display: none;
+    }
+    .show{
+      display: block;
     }
   </style>
 </head>
@@ -177,22 +199,16 @@
   <div id="container">
     <div id="clock">
       <div id="second">
-        <div id="leming-run"></div>
+        <div id="leming-run" onclick="run()"></div>
       </div>
       <div id="minute"></div>
       <div id="hour"></div>
-      <div id="num">
-        <div id="t3">3</div>
-        <div id="t6">6</div>
-        <div id="t9">9</div>
-        <div id="t12">12</div>
-      </div>
+      <div id="time"></div>
     </div>
-
-    <!-- <img id="leming-stretch" src="./img/leming-stretch-wait.gif" alt="leming-stretch" onclick="gif(this)"> -->
-
-    <img id="leming-onward" src="./img/leming-onward.gif" alt="leming-onward">
+    
+    <img id="leming-fast-movement" src="./img/leming-fast-movement.gif" alt="leming-fast-movement">
     <img id="leming-float" src="./img/leming-float.gif" alt="leming-float">
+    <div id="dialog" class="hide"></div>
 
     <!-- <div id="leming-fast-movement"></div> -->
   </div>
@@ -202,25 +218,85 @@
     const minute = document.getElementById('minute');
     const second = document.getElementById('second');
     const container = document.getElementById('container');
-    const leming_onward = document.getElementById('leming-onward');
+    const time = document.getElementById('time');
+    const leming_fast_movement = document.getElementById('leming-fast-movement');
     const leming_float = document.getElementById('leming-float');
+    const dialog = document.getElementById('dialog');
+    const dialog_w = 200;
+    const texts = [
+      '無可奉告\n哺乳動物們！',
+      '我果然是個天才\n到底要優秀到什麼程度才甘心',
+      '...我...我是...\n...我，沒有錯...',
+      '魔法用的好\n魔法道具也做得好\n現在連藥劑製作都能行',
+      '這群笨蛋\n沒我就等著完蛋\n終於辭職了!!!',
+      '我施展魔法的速度\n比地球上任何人都要快',
+      '我可是阿爾法烏里的第一大魔導士!',
+    ];
 
-    // 點擊雷明觸發動畫
+    // 點擊伸縮雷明觸發對話框
+    function dialogBox(el, id){
+      const _this = el;
+
+      if (!_this.classList.contains('runing')) {
+        dialog.innerText = texts[id]?? '別打擾我，我很忙碌';
+        dialog.style.top = `${_this.offsetTop + 50}px`;
+        
+        if((_this.offsetLeft - dialog_w) < 0){
+          dialog.classList.remove('left');
+          dialog.classList.add('right');
+          dialog.style.left = `${_this.offsetLeft + _this.offsetWidth + dialog_w}px`;
+        } else {
+          dialog.classList.remove('right');
+          dialog.classList.add('left');
+          dialog.style.left = `${_this.offsetLeft - dialog_w}px`;
+        }                
+
+        dialog.classList.add('stretching');
+        
+        setTimeout(() => {
+          dialog.classList.remove('hide');
+          setTimeout(() => {
+            dialog.classList.remove('stretching');
+            dialog.classList.add('hide');
+          }, 5800);
+        }, 1500);
+      }      
+    }
+
+    // 點擊彈跳雷明觸發動畫
     function gif(el) {
       const _this = el;
       let src = _this.getAttribute('src');
 
-      if (src.includes("-wait")) {
+      // 如果雷明是等待狀態且並非在移動中會觸發
+      if (src.includes("-wait") && !_this.classList.contains('runing') && !_this.classList.contains('jumping')) {
+        // 跳躍中禁用點擊
+        _this.classList.add('jumping');
         _this.style.pointerEvents = 'none';
-
+        
         let gif_src = src.replace('-wait', '');
         _this.setAttribute('src', gif_src);
-
+        
         let timer = setTimeout(() => {
           _this.setAttribute('src', src);
+          _this.classList.remove('jumping');
           _this.style.pointerEvents = 'auto';
           clearTimeout(timer);
         }, 8000);
+      }
+    }
+
+    // 點擊秒針的跑動小雷明會出現跑動雷明越過畫面
+    let count = 0;
+    function run(){      
+      count++;
+      
+      if(count%2 === 0){
+        leming_fast_movement.style.left = '-130px';
+        leming_fast_movement.style.transform = 'rotateY(180deg)';
+      } else {
+        leming_fast_movement.style.left = '100%';
+        leming_fast_movement.style.transform = 'rotateY(0deg)';
       }
     }
 
@@ -230,22 +306,70 @@
       return num;
     }
 
+    // 隨機移動
+    function randomMovement(id){
+      const leming = document.getElementById(id);
+
+      // 如果被選中的雷明移動中就 return
+      if (leming.classList.contains('runing') || leming.classList.contains('jumping') || leming.classList.contains('stretching')) return;
+      
+      // 隨機決定雷明移動距離 ( 不可超出內容寬度 )
+      const left = leming.offsetLeft;
+      const new_left = random(0, (container.clientWidth - leming.offsetWidth));
+      
+      // 如果位置沒有移動就 return
+      if (new_left === left) return;
+      
+      // 改為移動時的 gif
+      leming.src = './img/leming-onward.gif'
+
+      // 依照雷明移動方向翻轉圖片
+      if(new_left - left < 0) leming.style.transform = 'rotateY(180deg)';
+      
+      if (leming.classList.contains('leming-stretch')) leming.style.width = '145px';
+
+      leming.style.left = new_left + 'px';
+      leming.style.transition = `left 20s linear`;
+      leming.classList.add('runing');
+
+      const lemingTimer = setTimeout(() => {
+        leming.classList.remove('runing');
+        leming.style.transform = 'rotateY(0deg)';
+
+        if(!leming.classList.contains('leming-stretch')){
+          leming.src = './img/leming-jump-wait.gif';
+        } else {
+          leming.src = './img/leming-stretch-wait.gif';
+          leming.style.width = '160px'
+        }
+        clearTimeout(lemingTimer);
+      }, 20000);
+    }
+
     // 隨機放置 5 個雷明
     let stretch = random(2, 5);
+    // 雷明的陣列
+    const lemings = [];
     for (let i = 1; i <= 5; i++) {
       let img = document.createElement('img');
-
+      // 把雷明的 id 放入陣列
+      img.id = `leming-${i}`;
+      lemings.push(img.id);
+      
       if (i !== stretch) {
         img.src = './img/leming-jump-wait.gif';
         img.classList.add('leming-jump');
-        img.style.width = random(110, 130) + 'px';
+        img.style.width = random(120, 150) + 'px';
       } else {
         img.src = './img/leming-stretch-wait.gif';
         img.classList.add('leming-stretch');
+        img.addEventListener('click', () => {
+          dialogBox(img, random(0, texts.length - 1));
+        });
       }
-
-      img.style.left = (17 * i) + '%';
-      img.style.bottom = random(1, 15) + '%';
+      
+      img.style.left = (15 * i) + '%';
+      img.style.bottom = random(1, 13) + '%';
 
       img.onclick = function () {
         gif(this);
@@ -253,25 +377,44 @@
       container.append(img);
     }
 
+    // 依照距離遠近排序雷明陣列
+    lemings.sort((a, b) => {
+      const bottom_a = (document.getElementById(a).style.bottom.replace('%', ''))*1;
+      const bottom_b = (document.getElementById(b).style.bottom.replace('%', ''))*1;
+      return bottom_b - bottom_a;
+    });
+
+    // 越靠近底部的雷明 z-index 越大
+    lemings.map((id, i) => {
+      document.getElementById(id).style.zIndex = i + 1;
+    });
+    
+    // 每 10 秒移動一隻雷明
+    setInterval(() => {
+      const no_ing = lemings.filter((leming) => {
+        const run = !document.getElementById(leming).classList.contains('runing');
+        const jump = !document.getElementById(leming).classList.contains('jumping');
+        const stretch = !document.getElementById(leming).classList.contains('stretching');
+        return (run && jump && stretch);
+      });
+      if (no_ing.length === 0) return;
+      randomMovement(no_ing[random(0, (no_ing.length - 1))]);
+    } ,10000);
+    randomMovement(lemings[random(0, (lemings.length - 1))]);
+
     const clock = () => {
       const date = new Date();
       const h = date.getHours();
       const m = date.getMinutes();
       const s = date.getSeconds();
+      const am_pm = date.toLocaleTimeString('en-US').toString().split(' ')[1];
 
       hour.style.transform = `rotate(${h * (360 / 12) + 90}deg)`;
       minute.style.transform = `rotate(${m * (360 / 60) + 90}deg)`;
       second.style.transform = `rotate(${s * (360 / 60) + 90}deg)`;
 
-      // 每個小時雷明要出來打招呼
-      if (m === 0) {
-        leming_onward.style.left = '5%';
-        leming_onward.style.transform = 'rotateY(0deg)';
-        const thmer = setTimeout(() => {
-          leming_onward.setAttribute('src', './img/leming-onward-wait.gif');
-          clearTimeout(thmer);
-        }, 8000);
-      }
+      time.innerText = `${h.toString().padStart(2, '0')}：${m.toString().padStart(2, '0')}：${s.toString().padStart(2, '0')} ${am_pm}`;
+
       // 每到中午 12 點金技勵要出來打招呼
       if (h === 12) {
         leming_float.style.right = '2%';
@@ -279,9 +422,6 @@
       // 半小時後離場
       if (m === 30) {
         leming_float.style.right = '-258px';
-        leming_onward.style.left = '-130px';
-        leming_onward.style.transform = 'rotateY(180deg)';
-        leming_onward.setAttribute('src', './img/leming-onward.gif');
       }
     }
 
@@ -289,5 +429,4 @@
     clock();
   </script>
 </body>
-
 </html>
