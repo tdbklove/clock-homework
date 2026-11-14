@@ -9,6 +9,13 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Jersey+10&family=Press+Start+2P&family=Tiny5:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
   <style>
+    :root{
+      --x1: 0;
+      --y1: 0;
+      --x2: 0;
+      --y2: 0;
+    }
+
     body {
       width: 100vw;
       height: 100vh;
@@ -125,6 +132,7 @@
       top: 35%;
       transform: translate(-50%, -50%);
       align-content: center;
+      z-index: 1;
     }
 
     #hour {
@@ -252,6 +260,49 @@
     .show{
       display: block;
     }
+
+    .fish{
+      width: calc(160px / 3);
+      height: calc(128px / 3);
+      background-image: url('./img/fish.gif');
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: contain;
+      position: absolute;
+      z-index: 0;
+    }
+
+    @keyframes swimming {
+      0%{
+        left: var(--x1);
+        top: var(--y1);
+      }
+      100%{
+        left: var(--x2);
+        top: var(--y2);
+      }
+    }
+
+    @keyframes fade {
+      0%{
+        opacity: 0;
+      }
+      15%{
+        opacity: 0.8;
+      }
+      25%{
+        opacity: 1;
+      }
+      75%{
+        opacity: 1;
+      }     
+      85%{
+        opacity: 0.8;
+      }
+      100%{
+        opacity: 0;
+      }
+    } 
   </style>
 </head>
 
@@ -266,10 +317,8 @@
       <div id="round"></div>
       <div id="time"></div>
     </div>
-    
     <div id="leming-fast-movement" onclick="dialogBox(this, movement_texts[random(0, movement_texts.length - 1)])"></div>
     <div id="leming-float" onclick="dialogBox(this, `時間差不多了\n午餐吃 ${float_texts[random(0, float_texts.length - 1)]} 怎麼樣?`)"></div>
-
   </div>
 
   <script>
@@ -316,7 +365,7 @@
       return num;
     }
 
-    // 點擊伸縮雷明觸發對話框
+    // 點擊雷明觸發對話框
     function dialogBox(el, text){
       const _this = el;
 
@@ -521,6 +570,26 @@
     } ,10000);
     randomMovement(lemings[random(0, (lemings.length - 1))]);
 
+    // 隨機生成背景魚群游動
+    for(let i = 0; i <= random(3, 5); i++){
+      let fish = document.createElement('div');
+      fish.classList.add('fish');
+
+      let x_old = 0;
+      let x_new = 0;
+      let time_s = 60;
+      for(let i = 1; i <= 2; i++){
+        x_new = random(0, 100);
+        time_s = random(20, 40);
+        fish.style.setProperty(`--x${i}`, `${x_new}%`);
+        fish.style.setProperty(`--y${i}`, `${random(0, 70)}%`);
+        fish.style.transform = (x_new < x_old)? 'rotateY(180deg)' : 'rotateY(0deg)';
+        fish.style.animation = `swimming ${time_s}s ease-in-out infinite, fade ${time_s}s infinite`;
+        x_old = x_new;
+      }
+      container.append(fish);
+    }
+
     const clock = () => {
       const date = new Date();
       const h = date.getHours();
@@ -548,7 +617,6 @@
         leming_float.style.right = '-258px';
       }
     }
-
     setInterval(clock, 1000);
     clock();
   </script>
