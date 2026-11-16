@@ -23,11 +23,16 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+      font-family: 'Tiny5', 'DotGothic16', 'Press Start 2P', 'Jersey 10', 'Tiny5', Arial, sans-serif;
+    }
+    
+    #bg{
+      width: 100vw;
+      height: 100vh;
       background-image: url('./img/background.png');
       background-repeat: no-repeat;
       background-size: cover;
       background-position: center bottom;
-      font-family: 'Tiny5', 'DotGothic16', 'Press Start 2P', 'Jersey 10', 'Tiny5', Arial, sans-serif;
     }
 
     #container {
@@ -308,27 +313,38 @@
 
 <body>
   <div id="container">
+    <div id="bg"></div>
     <div id="clock">
       <div id="minute"></div>
       <div id="hour"></div>
       <div id="second">
-        <div id="leming-run" onclick="run()"></div>
+        <div id="leming-run" class="leming" onclick="run()"></div>
       </div>
       <div id="round"></div>
       <div id="time"></div>
     </div>
-    <div id="leming-fast-movement" onclick="dialogBox(this, movement_texts[random(0, movement_texts.length - 1)])"></div>
-    <div id="leming-float" onclick="dialogBox(this, `時間差不多了\n午餐吃 ${float_texts[random(0, float_texts.length - 1)]} 怎麼樣?`)"></div>
+    <div id="leming-fast-movement" class="leming" onclick="dialogBox(this, movement_texts[random(0, movement_texts.length - 1)])"></div>
+    <div id="leming-float" class="leming" onclick="dialogBox(this, `時間差不多了\n午餐吃 ${float_texts[random(0, float_texts.length - 1)]} 怎麼樣?`)"></div>
   </div>
 
   <script>
+    const body = document.getElementsByTagName('body')[0];
     const hour = document.getElementById('hour');
     const minute = document.getElementById('minute');
     const second = document.getElementById('second');
     const container = document.getElementById('container');
     const time = document.getElementById('time');
+    const leming = document.getElementsByClassName('leming');
     const leming_fast_movement = document.getElementById('leming-fast-movement');
     const leming_float = document.getElementById('leming-float');
+    const filters = [
+      { time: 4,  bg: 'brightness(0.6) hue-rotate(20deg)', leming: 'hue-rotate(20deg)'}, // 凌晨
+      { time: 8,  bg: 'hue-rotate(340deg)', leming: 'hue-rotate(20deg)'}, // 清晨
+      { time: 16, bg: 'hue-rotate(0deg)', leming: 'hue-rotate(0deg)' }, // 早上
+      { time: 19, bg: 'brightness(0.9) hue-rotate(180deg)', leming: 'hue-rotate(200deg)' }, // 黃昏
+      { time: 24, bg: 'brightness(0.6) hue-rotate(20deg)', leming: 'hue-rotate(20deg)'}, // 晚上
+    ];
+    let time_period = 4;
     const dialog_w = 180;
     const float_texts = [
       '豬肉湯飯',
@@ -515,6 +531,22 @@
         clearTimeout(lemingTimer);
       }, 20000);
     }
+    
+    // 背景顏色隨時間變化
+    function timeFilter(h) {
+      const time_index = filters.findIndex((val) => {
+        return h < val.time
+      });
+
+      if(time_index === time_period) return;
+      
+      body.style.filter = filters[time_index].bg;
+      for(const el of leming){
+        el.style.filter = filters[time_index].leming;
+      }
+
+      time_period = time_index;
+    }
 
     // 隨機放置 5 個雷明
     let stretch = random(2, 5);
@@ -525,6 +557,7 @@
       // 把雷明的 id 放入陣列
       div.id = `leming-${i}`;
       lemings.push(div.id);
+      div.classList.add('leming');
       
       if (i !== stretch) {
         div.classList.add('leming-jump');
@@ -590,6 +623,8 @@
       container.append(fish);
     }
 
+    // 雷明是否進入畫面
+    let leming_in = false;
     const clock = () => {
       const date = new Date();
       const h = date.getHours();
@@ -605,17 +640,22 @@
       time.innerText = `${t12[0].toString().padStart(2, '0')}：${t12[1].toString().padStart(2, '0')}：${t12[2].toString().padStart(2, '0')} ${am_pm}`;
 
       // 每到中午 12 點金技勵要出來打招呼
-      if (h === 12) {
+      if (h === 12 && m < 30 && leming_in === false) {
+        leming_in = true;
         leming_float.style.right = '2%';
         leming_float.style.pointerEvents = 'none';
         const timer = setTimeout(() => {
           dialogBox(leming_float, '我們去吃午餐吧！');
+          clearTimeout(timer);
         }, 7000);
       }
       // 半小時後離場
-      if (m === 30) {
+      if (h === 12 && m >= 30 && leming_in === true) {
+        leming_in = false;
         leming_float.style.right = '-258px';
       }
+
+      timeFilter(h);
     }
     setInterval(clock, 1000);
     clock();
