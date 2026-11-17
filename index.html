@@ -110,6 +110,7 @@
     .runing{
       background-image: var(--runing-url, url('./img/leming-onward.gif'));
       cursor: none;
+      transition: left 20s linear;
     }
 
     .jumping {
@@ -522,14 +523,13 @@
       if (leming.classList.contains('leming-stretch')) leming.style.width = '145px';
       
       leming.style.left = new_left + 'px';
-      leming.style.transition = `left 20s linear`;      
 
-      const lemingTimer = setTimeout(() => {
+      // 監聽移動結束後觸發
+      leming.addEventListener('transitionend', () => {
         leming.classList.remove('runing');
         leming.style.transform = 'rotateY(0deg)';
         if (leming.classList.contains('leming-stretch')) leming.style.width = '160px';
-        clearTimeout(lemingTimer);
-      }, 20000);
+      });
     }
     
     // 背景顏色隨時間變化
@@ -633,8 +633,8 @@
       const am_pm = date.toLocaleTimeString('en-US').toString().split(' ')[1];
       const t12 = date.toLocaleTimeString('en-US').toString().split(' ')[0].split(':');
 
-      hour.style.transform = `rotate(${h * (360 / 12) + 90}deg)`;
-      minute.style.transform = `rotate(${m * (360 / 60) + 90}deg)`;
+      hour.style.transform = `rotate(${h * (360 / 12) + m * (360 / 12 / 60) + s * (360 / 12 / 60 / 60) + 90}deg)`;
+      minute.style.transform = `rotate(${m * (360 / 60) + s * (360 / 60 / 60) + 90}deg)`;
       second.style.transform = `rotate(${s * (360 / 60) + 90}deg)`;
 
       time.innerText = `${t12[0].toString().padStart(2, '0')}：${t12[1].toString().padStart(2, '0')}：${t12[2].toString().padStart(2, '0')} ${am_pm}`;
